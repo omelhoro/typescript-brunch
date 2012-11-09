@@ -1,0 +1,28 @@
+{
+  "name": "typescript-brunch",
+  "version": "0.8.0",
+  "description": "Adds TypeScript support to brunch.",
+  "author": "Josh Heyse (http://heyse.us/blog)",
+  "homepage": "https://github.com/joshheyse/typescript-brunch",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:joshheyse/typescript-brunch.git"
+  },
+  "main": "./lib/index",
+  "scripts": {
+    "postinstall": "node setup.js postinstall",
+    "test": "node setup.js test"
+  },
+  "engines": {
+    "node": "~0.6.10 || 0.8 || 0.9"
+  },
+  "dependencies": {
+    "fs-extra": "0.3.2",
+    "coffee-script": "1.4.0",
+    "typescript": "0.8.0"
+  },
+  "devDependencies": {
+    "mocha": "1.2.2",
+    "chai": "1.1.0"
+  }
+}
