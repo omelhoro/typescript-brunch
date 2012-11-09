@@ -29,9 +29,6 @@ describe('Plugin', function() {
     
     plugin.compile(content, 'file.ts', function(error, data) {
       expect(error).to.be.ok;
-      console.log(error);
-      console.log(error.stack)
-      console.log(data);
       done();
     });
   });
