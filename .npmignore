@@ -1,4 +1,6 @@
 .lock-wscript
+.bin/
+.obj/
 .svn/
 .hg/
 .git/
@@ -7,3 +9,6 @@ CVS/
 *.bak
 .DS_Store
 npm-debug.log
+typescript-brunch.csproj
+typescript-brunch.csproj.user
+typescript-brunch.v11.suo
