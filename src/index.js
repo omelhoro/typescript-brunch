@@ -1,9 +1,18 @@
 (function() {
 
-    var TypeScript = require("./typescript.js");
-    var Compiler = require("./compiler.js");
-    var IO = require("./io.js");
+    var TypeScript = require("typescript");
+    var TypeScriptAPI = require("typescript.api");
     var sysPath = require("path");
+
+    function show_diagnostics (units, callback) {
+
+        for(var n in units) {
+            for(var m in units[n].diagnostics) {
+                var errorMsg = units[n].diagnostics[m].toString();
+                callback(errorMsg, null);
+            }
+        }
+    }
 
     module.exports = TypeScriptCompiler = (function () {
         
@@ -12,22 +21,15 @@
         TypeScriptCompiler.prototype.extension = "ts";
 
         function TypeScriptCompiler(config) {
-            console.log("here");
-            this.config = config;
-            
-            this.compilationSettings = new TypeScript.CompilationSettings();
-            this.compilationSettings.codeGenTarget = TypeScript.CodeGenTarget.ES5;
-            this.compilationSettings.moduleGenTarget = TypeScript.ModuleGenTarget.Synchronous;
-            this.compilationSettings.useDefaultLib = false;
-            this.compilationSettings.resolve = true;
 
+            this.config = config;
             this.libPath = sysPath.join(__dirname, "..", "node_modules", "typescript", "bin", "lib.d.ts");
         }
         
         TypeScriptCompiler.prototype.compile = function (data, path, callback) {
+
             var js = "";
             var error = null;
-            var io = IO;
             var outputWriter = {
                 Write: function (str) {
                     js += str;
@@ -46,34 +48,35 @@
                 Close: function () {
                 }
             };
+
             path = TypeScript.switchToForwardSlashes(path);
-            io.createFile = function (fileName, useUTF8) {
-                if(fileName.match(new RegExp(path.replace(/\.ts$/, ".js")))) {
-                    return outputWriter;
-                } else {
-                    return nullWriter;
-                }
-            };
-            // TypeScript.CompilerDiagnostics.debug = true;
-            // TypeScript.CompilerDiagnostics.diagnosticWriter = {
-            //     Alert: function (s) {
-            //         io.printLine(s);
-            //     }
-            // };
+
             try  {
-                var batchCompiler = new Compiler.Compiler.BatchCompiler(io, this.compilationSettings);
-                batchCompiler.batchCompile([
-                    new TypeScript.SourceUnit(this.libPath, null),
-                    new TypeScript.SourceUnit(path, data)
-                ]);
-            } catch (err) {
+                TypeScriptAPI.resolve([path], function(resolved) {
+                    if (TypeScriptAPI.check(resolved)) {
+                        TypeScriptAPI.compile(resolved, function(compiled) {
+                            if(!TypeScriptAPI.check(compiled)) {
+                                show_diagnostics (compiled, callback);
+                            }
+                            else {
+                                for (var compileUnit in compiled) {
+                                    callback(null, compiled[compileUnit].content);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        show_diagnostics(resolved, callback);
+                    }
+                });
+            } 
+            catch (err) {
                 error = err.stack;
-            }finally {
+            }
+            finally {
                 callback(error, js);
             }
         };
-
         return TypeScriptCompiler;
     })();
-
 }).call(this);
