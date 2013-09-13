@@ -1,6 +1,6 @@
 (function() {
 
-    var TypeScript = require("typescript");
+    //var TypeScript = require("typescript");
     var TypeScriptAPI = require("typescript.api");
     var sysPath = require("path");
 
@@ -23,7 +23,7 @@
         function TypeScriptCompiler(config) {
 
             this.config = config;
-            this.libPath = sysPath.join(__dirname, "..", "node_modules", "typescript", "bin", "lib.d.ts");
+            //this.libPath = sysPath.join(__dirname, "..", "node_modules", "typescript", "bin", "lib.d.ts");
         }
         
         TypeScriptCompiler.prototype.compile = function (data, path, callback) {
@@ -49,7 +49,7 @@
                 }
             };
 
-            path = TypeScript.switchToForwardSlashes(path);
+            path = path.replace(/\\/g, "/");
 
             try  {
                 TypeScriptAPI.resolve([path], function(resolved) {

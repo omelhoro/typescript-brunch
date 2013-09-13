@@ -18,7 +18,6 @@
   "dependencies": {
     "fs-extra": "0.3.2",
     "mv": "0.0.4",
-    "typescript": "0.9.1-1",
     "typescript.api": "0.7.6"
   },
   "devDependencies": {
