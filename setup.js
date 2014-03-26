@@ -18,17 +18,7 @@ var execute = function (pathParts, params, callback) {
     });
 };
 
-if (mode === 'postinstall') {
-    var modifiedFile = sysPath.join(__dirname, 'src', 'typescript.js');
-    var contents = [
-      '(function() {',
-      fs.readFileSync(sysPath.join(__dirname, '/node_modules/typescript/bin/typescript.js'), 'utf8'),
-      'module.exports = TypeScript;',
-      '}).call({});'
-    ].join('');
-    fs.writeFileSync(modifiedFile, contents, 'utf8');
-}
-else if (mode === 'test') {
+if (mode === 'test') {
     execute(['node_modules', 'mocha', 'bin', 'mocha'],
       '--require test/common.js --colors');
 }
