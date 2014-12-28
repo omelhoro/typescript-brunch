@@ -1,6 +1,6 @@
 {
   "name": "typescript-brunch",
-  "version": "0.9.1",
+  "version": "1.3.0",
   "description": "Adds TypeScript support to brunch.",
   "author": "Josh Heyse (http://heyse.us/blog)",
   "homepage": "https://github.com/joshheyse/typescript-brunch",
@@ -18,7 +18,7 @@
   "dependencies": {
     "fs-extra": "0.3.2",
     "mv": "0.0.4",
-    "typescript.api": "0.7.6"
+    "typescript-compiler":"theblacksmith/typescript-compiler"
   },
   "devDependencies": {
     "mocha": "1.2.2",
