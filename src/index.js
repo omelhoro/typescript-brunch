@@ -1,7 +1,8 @@
 (function() {
 
     //var TypeScript = require("typescript");
-    var TypeScriptAPI = require("typescript.api");
+    // var TypeScriptAPI = require("typescript.api");
+    var tsc=require("typescript-compiler");
     var sysPath = require("path");
 
     function show_diagnostics (units, callback) {
@@ -52,26 +53,37 @@
             path = path.replace(/\\/g, "/");
 
             try  {
-                TypeScriptAPI.resolve([path], function(resolved) {
-                    if (TypeScriptAPI.check(resolved)) {
-                        TypeScriptAPI.compile(resolved, function(compiled) {
-                            if(!TypeScriptAPI.check(compiled)) {
-                                show_diagnostics (compiled, callback);
-                            }
-                            else {
-                                for (var compileUnit in compiled) {
-                                    callback(null, compiled[compileUnit].content);
-                                }
-                            }
-                        });
-                    }
-                    else {
-                        show_diagnostics(resolved, callback);
-                    }
-                });
+                var error
+                var res=tsc.compile(path,"--module commonjs --outDir /tmp/",null,function(err){
+                    // console.log(Object.keys(err),err.messageText),
+                    error+=err.messageText
+                    // callback(err.messageText,null)
+                })
+                var fl=Object.keys(res.sources)[0]
+                var comp=res.sources[fl]
+                // console.log(comp)
+                js+=comp
+                // return callback(null,{data: comp })
+                // TypeScriptAPI.resolve([path], function(resolved) {
+                //     if (TypeScriptAPI.check(resolved)) {
+                //         TypeScriptAPI.compile(resolved, function(compiled) {
+                //             if(!TypeScriptAPI.check(compiled)) {
+                //                 show_diagnostics (compiled, callback);
+                //             }
+                //             else {
+                //                 for (var compileUnit in compiled) {
+                //                     callback(null, compiled[compileUnit].content);
+                //                 }
+                //             }
+                //         });
+                //     }
+                //     else {
+                //         show_diagnostics(resolved, callback);
+                //     }
+                // });
             } 
             catch (err) {
-                error = err.stack;
+                // error += err.stack;
             }
             finally {
                 callback(error, js);
