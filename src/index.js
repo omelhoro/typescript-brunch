@@ -23,12 +23,12 @@
             var promise = new Promise(function (resolve, reject) {
                 if (path.slice(-5) !== ".d.ts") {
                     //compile to temporary dir because tsc-compiler cant resolve references in strings
-                    var res = tsc.compile(path, "--module commonjs --outDir " + tmpDir, null, function(err) {
+                    var result = tsc.compile(path, "--module commonjs --outDir " + tmpDir, null, function(err) {
                         var error = err.formattedMessage + '\n';
                         reject(error);
                     });
-                    var fl = Object.keys(res.sources)[0];
-                    var comp = res.sources[fl];
+                    var fileName = Object.keys(result.sources)[0];
+                    var comp = result.sources[fileName];
                     js += comp;
                     resolve(js);
                 }
