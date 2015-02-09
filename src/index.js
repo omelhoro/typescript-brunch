@@ -1,74 +1,49 @@
 (function() {
 
-    //var TypeScript = require("typescript");
-    // var TypeScriptAPI = require("typescript.api");
     var tsc = require("typescript-compiler");
     var sysPath = require("path");
-    var os = require("os")
+    var os = require("os");
+    var Promise = require('promise');
 
-    function show_diagnostics(units, callback) {
-
-        for (var n in units) {
-            for (var m in units[n].diagnostics) {
-                var errorMsg = units[n].diagnostics[m].toString();
-                callback(errorMsg, null);
-            }
-        }
+    function TypeScriptCompiler(config) {
+        this.config = config;
     }
 
-    module.exports = TypeScriptCompiler = (function() {
+    TypeScriptCompiler.prototype.brunchPlugin = true;
+    TypeScriptCompiler.prototype.type = "javascript";
+    TypeScriptCompiler.prototype.extension = "ts";
 
-        TypeScriptCompiler.prototype.brunchPlugin = true;
-        TypeScriptCompiler.prototype.type = "javascript";
-        TypeScriptCompiler.prototype.extension = "ts";
+    TypeScriptCompiler.prototype.compile = function(data, path, callback) {
+        var js = "";
+        var tmpDir = os.tmpDir();
+        path = path.replace(/\\/g, "/");
 
-        function TypeScriptCompiler(config) {
-
-            this.config = config;
-            //this.libPath = sysPath.join(__dirname, "..", "node_modules", "typescript", "bin", "lib.d.ts");
-        }
-
-        TypeScriptCompiler.prototype.compile = function(data, path, callback) {
-
-            var js = "";
-            var error = null;
-            var outputWriter = {
-                Write: function(str) {
-                    js += str;
-                },
-                WriteLine: function(str) {
-                    js += str + "\n";
-                },
-                Close: function() {}
-            };
-            var nullWriter = {
-                Write: function(str) {},
-                WriteLine: function(str) {},
-                Close: function() {}
-            };
-
-            path = path.replace(/\\/g, "/");
-            var tmpDir = os.tmpdir()
-
-            function compile() {
-                var error
-                    //compile to temporary dir because tsc-compiler cant resolve references in strings
-                var res = tsc.compile(path, "--module commonjs --outDir " + tmpDir, null, function(err) {
-                    error += err.messageText
-                })
-                var fl = Object.keys(res.sources)[0]
-                var comp = res.sources[fl]
-                js += comp
+        var promise = new Promise(function (resolve, reject) {
+            if (path.slice(-5) !== ".d.ts") {
+                //compile to temporary dir because tsc-compiler cant resolve references in strings
+                var result = tsc.compile(path, "--module commonjs --outDir " + tmpDir, null, function(err) {
+                    var error = err.formattedMessage + '\n';
+                    reject(error);
+                });
+                var fileName = null;
+                var sourceFiles = Object.keys(result.sources);
+                for(var i = 0; i < sourceFiles.length; i++) {
+                    if (sysPath.basename(sourceFiles[i], '.js') == sysPath.basename(path, '.ts')) {
+                        fileName = sourceFiles[i];
+                    }
+                }
+                var comp = result.sources[fileName];
+                js += comp;
+                resolve(js);
             }
+        });
 
-            try {
-                path.slice(-5) === ".d.ts" ? null : compile()
-            } catch (err) {
-                // error += err.stack;
-            } finally {
-                callback(error, js);
-            }
-        };
-        return TypeScriptCompiler;
-    })();
+        promise.then(function(result) {
+            callback(null, result);
+        }, function(error) {
+            callback(error);
+        })
+    };
+
+    module.exports = TypeScriptCompiler;
 }).call(this);
