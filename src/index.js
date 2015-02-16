@@ -36,6 +36,9 @@
                 js += comp;
                 resolve(js);
             }
+            else{
+                resolve(null)
+            }
         });
 
         promise.then(function(result) {
