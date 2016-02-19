@@ -16,7 +16,7 @@
     "node": "~0.6.10 || 0.8 || 0.9 || 0.10"
   },
   "dependencies": {
-    "fs-extra": "0.3.2",
+    "fs-extra": "0.26.5",
     "mv": "0.0.4",
     "typescript-compiler":"theblacksmith/typescript-compiler",
     "promise": "^6.1.0"
