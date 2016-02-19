@@ -18,7 +18,7 @@
   "dependencies": {
     "fs-extra": "0.26.5",
     "mv": "0.0.4",
-    "typescript-compiler":"theblacksmith/typescript-compiler",
+    "typescript-compiler":"1.4.1-2",
     "promise": "^6.1.0"
   },
   "devDependencies": {
